@@ -158,7 +158,7 @@ class MybotController extends Controller
         // Log::channel('daily')->info('Received Request', $data);
         // Write the data to the log file
         file_put_contents($logFile, $data . PHP_EOL, FILE_APPEND);
-        
+
 
         // Decode the JSON data
         $getData = json_decode($data, true);
@@ -172,14 +172,14 @@ class MybotController extends Controller
             3. Make complaint'
             ],
             'teacher' => [
-                
+
                 'response' => 'You selected the Teacher category. Here are some resources for teachers: 
             1. Make complaint
             2. Make complaint
             3. Make complaint'
             ],
             'administration' => [
-                
+
                 'response' => 'You selected the Administration category. Here are some resources for administrators: 
             1. Make complaint
             2. Make complaint
@@ -195,19 +195,17 @@ class MybotController extends Controller
             foreach ($categories as $category => $data) {
                 $botMessage .= "\n $category";
             }
-        }else{
-                // Check if the user's message matches any category or question
-                
-               foreach ($categories as $categoryKey => $category) {
-                    if ($userMessage === $categoryKey) {
-                        $botMessage = $category['response'];
-                        break;  // Exit the loop since a match was found
-                    }
-                    else{
-                        $botMessage = "sorry,i don't understand you";
-                    }
+        } else {
+            // Check if the user's message matches any category or question
+
+            foreach ($categories as $categoryKey => $category) {
+                if ($userMessage === $categoryKey) {
+                    $botMessage = $category['response'];
+                    break;  // Exit the loop since a match was found
+                } else {
+                    $botMessage = "sorry,i don't understand you";
                 }
-   
+            }
         }
 
 
@@ -234,32 +232,133 @@ class MybotController extends Controller
             return "Error: " . $e->getMessage();
         }
     }
-public function setWebhook()
-{
-    $BOT_TOKEN = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
-    $webhookUrl = 'https://biomed-backend.devdrizzy.online/api/webhook';
+    public function setWebhook()
+    {
+        $BOT_TOKEN = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
+        $webhookUrl = 'https://biomed-backend.devdrizzy.online/api/webhook';
 
-    $apiUrl = "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$webhookUrl";
+        $apiUrl = "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$webhookUrl";
 
-    try {
-        $response = Http::get($apiUrl);
+        try {
+            $response = Http::get($apiUrl);
 
-        if ($response->successful()) {
-            return $response->body();
-        } else {
-            return "Error setting webhook";
+            if ($response->successful()) {
+                return $response->body();
+            } else {
+                return "Error setting webhook";
+            }
+        } catch (\Exception $e) {
+            return "Error: " . $e->getMessage();
         }
-    } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
     }
-}
+
+    public function handleWeb5hook(Request $request)
+    {
+        $botMessage = '';
+        // Get the raw POST data from the request
+        $data = $request->getContent();
+        $logFile = storage_path('logs/webhooksentdata.json');
+
+        file_put_contents($logFile, $data . PHP_EOL, FILE_APPEND);
 
 
-    public function getChannelInfo(){
+        // Decode the JSON data
+        $getData = json_decode($data, true);
+        $userId = $getData['message']['from']['id'];
+        $userMessage = strtolower($getData['message']['text']);
+        $categories = [
+            'student' => [
+
+                'response' => 'You selected the Student category. Here are some resources for students:
+            1. Make complaint
+            2. Make complaint
+            3. Make complaint'
+            ],
+            'teacher' => [
+
+                'response' => 'You selected the Teacher category. Here are some resources for teachers: 
+            1. Make complaint
+            2. Make complaint
+            3. Make complaint'
+            ],
+            'administration' => [
+
+                'response' => 'You selected the Administration category. Here are some resources for administrators: 
+            1. Make complaint
+            2. Make complaint
+            3. Make complaint'
+            ],
+        ];
+        // ... (rest of your code)
+
+        if ($userMessage == 'Hi' || $userMessage == '/start' || $userMessage == 'hello' || $userMessage == 'hi' || $userMessage == 'Hello') {
+            // Initialize the default bot message
+            $botMessage = 'Hi there! Please type a category to explore:';
+
+            // Generate links to categories with inline keyboard buttons
+            $keyboard = [
+                'keyboard' => [],
+                'resize_keyboard' => true,
+                'one_time_keyboard' => true,
+            ];
+
+            foreach ($categories as $category => $data) {
+                $keyboard['keyboard'][] = [
+                    ['text' => $category],
+                ];
+            }
+
+            $parameters['reply_markup'] = json_encode($keyboard);
+        } else {
+            // Check if the user's message matches any category or question
+            foreach ($categories as $categoryKey => $category) {
+                if ($userMessage === $categoryKey) {
+                    // Create a custom keyboard with clickable buttons for the responses
+                    $keyboard = [
+                        'keyboard' => [],
+                        'resize_keyboard' => true,
+                        'one_time_keyboard' => true,
+                    ];
+
+                    // Split the responses into an array
+                    $responses = explode("\n", $category['response']);
+                    foreach ($responses as $response) {
+                        $keyboard['keyboard'][] = [
+                            ['text' => $response],
+                        ];
+                    }
+
+                    $parameters['reply_markup'] = json_encode($keyboard);
+                    $botMessage = "Please select an option:";
+                    break;  // Exit the loop since a match was found
+                } else {
+                    $botMessage = "Sorry, I don't understand you.";
+                }
+            }
+        }
+        $botToken = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
+        $apiUrl = "https://api.telegram.org/bot$botToken/sendMessage";
+
+        try {
+            $response = Http::post($apiUrl, $parameters);
+
+            if ($response->successful()) {
+                return $response->body();
+            } else {
+                return "Error sending message to Telegram API";
+            }
+        } catch (\Exception $e) {
+            return "Error: " . $e->getMessage();
+        }
+        // ... (rest of your code)
+    }
+
+    public function getChannelInfo()
+    {
         $BOT_TOKEN = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
         $CHANNEL_ID = -1001944402217;
-        $parameters =array(
-            'chat_id'=>$CHANNEL_ID
+        $parameters = array(
+            'chat_id' => $CHANNEL_ID
         );
         $apiUrl = "https://api.telegram.org/bot{$BOT_TOKEN}/getChat";
 
@@ -274,7 +373,5 @@ public function setWebhook()
         } catch (\Exception $e) {
             return "Error: " . $e->getMessage();
         }
-
     }
-  
 }

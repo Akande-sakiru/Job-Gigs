@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\userController;
 use App\Http\Controllers\MybotController;
 use App\Http\Controllers\listingController;
+use App\Http\Controllers\PrdtController;
+use App\Http\Controllers\QrCodeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +20,14 @@ use App\Http\Controllers\listingController;
 */
 // all
 Route::get('/', [ListingController::class, 'index']);
+Route::get('qrcode', [QrCodeController::class, 'homeView']);
+
+
+Route::get('qrcode1', [PrdtController::class, 'index']);
+Route::get('create', [PrdtController::class, 'createPdrt']);
+Route::post('post', [PrdtController::class, 'storePdrt']);
+
+
 
 // Show Create Form
 Route::get('/listings/create', [ListingController::class, 'create'])->middleware('auth');

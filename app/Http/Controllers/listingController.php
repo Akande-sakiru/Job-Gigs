@@ -37,6 +37,7 @@ class listingController extends Controller
             $formFields['logo'] = $req->file('logo')->store('logos', 'public');
         }
 
+        // return dd(asset($formFields['logo']));
         $formFields['user_id'] = auth()->id();   
 
         Listing::create($formFields);
