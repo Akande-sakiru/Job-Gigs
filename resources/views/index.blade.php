@@ -39,7 +39,7 @@
                                     <td>{{$product->title}}</td>
                                     <td>{{$product->price}}</td>
                                     <td>{!! DNS2D::getBarCodeHTML("$product->product_code",'QRCODE') !!}
-                                        p - {{ $product->product_code }}
+                                        <input type="hidden" value="p - {{ $product->product_code }}">
                                     </td>
                                     <td>{{$product->description}}</td>
                                 </tr>

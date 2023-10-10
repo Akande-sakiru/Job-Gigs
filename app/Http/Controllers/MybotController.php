@@ -77,161 +77,6 @@ class MybotController extends Controller
 
         return response()->json(['message' => 'Webhook data received and logged.']);
     }
-
-    // public function WebhookHandler(Request $request)
-    // {
-    //     // Get the raw POST data from the request
-    //     $data = $request->getContent();
-
-    //     // Define the path to the log file
-    //     $logFile = storage_path('logs/webhooksentdata.json');
-
-    //     // Write the data to the log file
-    //     file_put_contents($logFile, $data . PHP_EOL, FILE_APPEND);
-
-    //     // Decode the JSON data
-    //     $getData = json_decode($data, true);
-    //     $userId = $getData['message']['from']['id'];
-    //     $userMessage = $getData['message']['text'];
-
-    //     if ($userMessage == 'hi' || $userMessage == 'Hi' || $userMessage == 'hello') {
-    //         $botMessage = 'Hi there';
-    //     }
-    //     else if ($userMessage == 'Yr father') {
-    //         $botMessage = 'oloshi Yr mama';
-    //     }
-    //     else {
-    //         $botMessage = "I can't hear you, speak louder";
-    //     }
-    //     // Prepare the parameters for the Telegram API request
-    //     $parameters = [
-    //         'chat_id' => $userId,
-    //         'text' => $botMessage,
-    //         'parse_mode' => 'html',
-    //     ];
-
-    //     // Send the message to the Telegram API
-    //     $botToken = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
-    //     $apiUrl = "https://api.telegram.org/bot$botToken/sendMessage";
-
-    //     try {
-    //         $response = Http::post($apiUrl, $parameters);
-
-    //         if ($response->successful()) {
-    //             return $response->body();
-    //         } else {
-    //             return "Error sending message to Telegram API";
-    //         }
-    //     } catch (\Exception $e) {
-    //         return "Error: " . $e->getMessage();
-    //     }
-    // }
-
-    // public function setWebhook()
-    // {
-    //     $BOT_TOKEN = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
-    //     $webhookUrl = 'https://biomed-backend.devdrizzy.online/api/webhook';
-
-    //     $apiUrl = "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$webhookUrl";
-
-    //     try {
-    //         $response = Http::get($apiUrl);
-
-    //         if ($response->successful()) {
-    //             return $response->body();
-    //         } else {
-    //             return "Error setting webhook";
-    //         }
-    //     } catch (\Exception $e) {
-    //         return "Error: " . $e->getMessage();
-    //     }
-    // }
-    public function WebhookHandler(Request $request)
-    {
-        $botMessage = '';
-        // Get the raw POST data from the request
-        $data = $request->getContent();
-
-        // Define the path to the log file
-        $logFile = storage_path('logs/webhooksentdata.json');
-        // $logFile1 = storage_path('logs/webhooksentdata1.json');
-        // Log::channel('daily')->info('Received Request', $data);
-        // Write the data to the log file
-        file_put_contents($logFile, $data . PHP_EOL, FILE_APPEND);
-
-
-        // Decode the JSON data
-        $getData = json_decode($data, true);
-        $userId = $getData['message']['from']['id'];
-        $userMessage = strtolower($getData['message']['text']);
-        $categories = [
-            'student' => [
-                'response' => 'You selected the Student category. Here are some resources for students:
-            1. Make complaint
-            2. Make complaint
-            3. Make complaint'
-            ],
-            'teacher' => [
-
-                'response' => 'You selected the Teacher category. Here are some resources for teachers: 
-            1. Make complaint
-            2. Make complaint
-            3. Make complaint'
-            ],
-            'administration' => [
-
-                'response' => 'You selected the Administration category. Here are some resources for administrators: 
-            1. Make complaint
-            2. Make complaint
-            3. Make complaint'
-            ],
-        ];
-
-        if ($userMessage == 'Hi' || $userMessage == '/start' || $userMessage == 'hello' || $userMessage == 'hi' || $userMessage == 'Hello') {
-            // Initialize the default bot message
-            $botMessage = 'Hi there! Please type a category to explore:';
-
-            // Generate links to categories
-            foreach ($categories as $category => $data) {
-                $botMessage .= "\n $category";
-            }
-        } else {
-            // Check if the user's message matches any category or question
-
-            foreach ($categories as $categoryKey => $category) {
-                if ($userMessage === $categoryKey) {
-                    $botMessage = $category['response'];
-                    break;  // Exit the loop since a match was found
-                } else {
-                    $botMessage = "sorry,i don't understand you";
-                }
-            }
-        }
-
-
-        // Prepare the parameters for the Telegram API request
-        $parameters = [
-            'chat_id' => $userId,
-            'text' => $botMessage,
-            'parse_mode' => 'html',
-        ];
-
-        // Send the message to the Telegram API
-        $botToken = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
-        $apiUrl = "https://api.telegram.org/bot$botToken/sendMessage";
-
-        try {
-            $response = Http::post($apiUrl, $parameters);
-
-            if ($response->successful()) {
-                return $response->body();
-            } else {
-                return "Error sending message to Telegram API";
-            }
-        } catch (\Exception $e) {
-            return "Error: " . $e->getMessage();
-        }
-    }
     public function setWebhook()
     {
         $BOT_TOKEN = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
@@ -252,107 +97,6 @@ class MybotController extends Controller
         }
     }
 
-    public function handleWeb5hook(Request $request)
-    {
-        $botMessage = '';
-        // Get the raw POST data from the request
-        $data = $request->getContent();
-        $logFile = storage_path('logs/webhooksentdata.json');
-
-        file_put_contents($logFile, $data . PHP_EOL, FILE_APPEND);
-
-
-        // Decode the JSON data
-        $getData = json_decode($data, true);
-        $userId = $getData['message']['from']['id'];
-        $userMessage = strtolower($getData['message']['text']);
-        $categories = [
-            'student' => [
-
-                'response' => 'You selected the Student category. Here are some resources for students:
-            1. Make complaint
-            2. Make complaint
-            3. Make complaint'
-            ],
-            'teacher' => [
-
-                'response' => 'You selected the Teacher category. Here are some resources for teachers: 
-            1. Make complaint
-            2. Make complaint
-            3. Make complaint'
-            ],
-            'administration' => [
-
-                'response' => 'You selected the Administration category. Here are some resources for administrators: 
-            1. Make complaint
-            2. Make complaint
-            3. Make complaint'
-            ],
-        ];
-        // ... (rest of your code)
-
-        if ($userMessage == 'Hi' || $userMessage == '/start' || $userMessage == 'hello' || $userMessage == 'hi' || $userMessage == 'Hello') {
-            // Initialize the default bot message
-            $botMessage = 'Hi there! Please type a category to explore:';
-
-            // Generate links to categories with inline keyboard buttons
-            $keyboard = [
-                'keyboard' => [],
-                'resize_keyboard' => true,
-                'one_time_keyboard' => true,
-            ];
-
-            foreach ($categories as $category => $data) {
-                $keyboard['keyboard'][] = [
-                    ['text' => $category],
-                ];
-            }
-
-            $parameters['reply_markup'] = json_encode($keyboard);
-        } else {
-            // Check if the user's message matches any category or question
-            foreach ($categories as $categoryKey => $category) {
-                if ($userMessage === $categoryKey) {
-                    // Create a custom keyboard with clickable buttons for the responses
-                    $keyboard = [
-                        'keyboard' => [],
-                        'resize_keyboard' => true,
-                        'one_time_keyboard' => true,
-                    ];
-
-                    // Split the responses into an array
-                    $responses = explode("\n", $category['response']);
-                    foreach ($responses as $response) {
-                        $keyboard['keyboard'][] = [
-                            ['text' => $response],
-                        ];
-                    }
-
-                    $parameters['reply_markup'] = json_encode($keyboard);
-                    $botMessage = "Please select an option:";
-                    break;  // Exit the loop since a match was found
-                } else {
-                    $botMessage = "Sorry, I don't understand you.";
-                }
-            }
-        }
-        $botToken = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
-        $apiUrl = "https://api.telegram.org/bot$botToken/sendMessage";
-
-        try {
-            $response = Http::post($apiUrl, $parameters);
-
-            if ($response->successful()) {
-                return $response->body();
-            } else {
-                return "Error sending message to Telegram API";
-            }
-        } catch (\Exception $e) {
-            return "Error: " . $e->getMessage();
-        }
-        // ... (rest of your code)
-    }
-
     public function getChannelInfo()
     {
         $BOT_TOKEN = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
@@ -365,6 +109,118 @@ class MybotController extends Controller
         try {
             $response = Http::post($apiUrl, $parameters);
 
+            if ($response->successful()) {
+                return $response->body();
+            } else {
+                return "Error sending message to Telegram API";
+            }
+        } catch (\Exception $e) {
+            return "Error: " . $e->getMessage();
+        }
+    }
+    public function WebhookHandler(Request $request)
+    {
+        // Get the raw POST data from the request
+        $data = $request->getContent();
+        $logFile = storage_path('logs/webhooksentdata.json');
+        file_put_contents($logFile, $data . PHP_EOL, FILE_APPEND);
+    
+        // Decode the JSON data
+        $getData = json_decode($data, true);
+        $userId = '';
+        $userMessage = isset($getData['message']) ? strtolower($getData['message']['text']) : '';
+        $categories = [
+            'student' => [
+                'response' => 'You selected the Student category. Here are some resources for students',
+                'buttons' => [
+                    ['text' => 'Result', 'callback_data' => 'result'],
+                    ['text' => 'Admission', 'callback_data' => 'admission'],
+                    ['text' => 'Bursary', 'callback_data' => 'bursary']
+                ]
+            ],
+            'teacher' => [
+                'response' => 'You selected the Teacher category. Here are some resources for students',
+                'buttons' => [
+                    ['text' => 'Attendance', 'callback_data' => 'attendance'],
+                    ['text' => 'Result', 'callback_data' => 'result'],
+                    ['text' => 'Class Register', 'callback_data' => 'class_register'],
+                ]
+            ],
+            'parent' => [
+                'response' => 'You selected the Parent category. Here are some resources for students',
+                'buttons' => [
+                    ['text' => 'Result', 'callback_data' => 'result'],
+                    ['text' => 'Admission', 'callback_data' => 'admission'],
+                    ['text' => 'Bursary', 'callback_data' => 'bursary'],
+                ]
+            ],
+            'administrator' => [
+                'response' => 'You selected the Administrator category. Here are some resources for students',
+                'buttons' => [
+                    ['text' => 'Result', 'callback_data' => 'result'],
+                    ['text' => 'Admission', 'callback_data' => 'admission'],
+                    ['text' => 'Bursary', 'callback_data' => 'bursary'],
+                    ['text' => 'Attendance', 'callback_data' => 'attendance'],
+                    ['text' => 'Registration', 'callback_data' => 'registration'],
+                ]
+            ],
+        ];
+    
+        // Initialize the default bot message
+        $botMessage = '';
+    
+        // Generate links to categories with inline keyboard buttons
+        $keyboard = [
+            'inline_keyboard' => [],
+        ];
+    
+        if ($userMessage == 'hi' || $userMessage == '/start' || $userMessage == 'hello') {
+            $userId = $getData['message']['from']['id'];
+            $botMessage = 'Hi there! Please type a category to explore:';
+    
+            foreach ($categories as $category => $data) {
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => ucfirst($category), 'callback_data' => $category],
+                ];
+            }
+        } 
+        else if (isset($getData['callback_query'])) {
+            // Handle button click
+            $buttonMessage = $getData['callback_query']['data'];
+            $userId = $getData['callback_query']['from']['id'];
+            $botToken = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8';
+            $apiUrl = "https://api.telegram.org/bot$botToken/sendMessage";
+            
+            foreach ($categories as $categoryKey => $category) {
+                if ($buttonMessage === $categoryKey) {
+                    $botMessage = $category['response'];
+                    // $keyboard['inline_keyboard'][] = [['text' => ucfirst('test'), 'callback_data' => 'test']];
+                    foreach($category['buttons'] as $key => $button) {
+                        $keyboard['inline_keyboard'][] = [['text' => ucfirst($button['text']), 'callback_data' => $button['callback_data']]];
+                    }
+                    break;
+                } else {
+                    $botMessage = "Sorry, I don't understand you.";
+                }
+            }
+        }
+        else {
+            $botMessage = "Sorry, I don't understand yougggggggg.";
+        }
+    
+        $botToken = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8';
+        $apiUrl = "https://api.telegram.org/bot$botToken/sendMessage";
+    
+        $parameters = [
+            'chat_id' => $userId,
+            'text' => $botMessage,
+            'parse_mode' => 'html',
+            'reply_markup' => json_encode($keyboard),
+        ];
+    
+        try {
+            $response = Http::post($apiUrl, $parameters);
+    
             if ($response->successful()) {
                 return $response->body();
             } else {
