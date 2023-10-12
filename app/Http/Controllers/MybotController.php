@@ -44,7 +44,6 @@ class MybotController extends Controller
             return "Error: " . $e->getMessage();
         }
     }
-
     public function getWebhookInfo()
     {
         $BOT_TOKEN = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
@@ -63,7 +62,6 @@ class MybotController extends Controller
             return "Error: " . $e->getMessage();
         }
     }
-
     public function handleWebhook(Request $request)
     {
         // Get the raw POST data from the request
@@ -96,7 +94,6 @@ class MybotController extends Controller
             return "Error: " . $e->getMessage();
         }
     }
-
     public function getChannelInfo()
     {
         $BOT_TOKEN = '6605753719:AAGXAGHErCZk0i4ylKzQ7RGGX1NTPQJFNn8'; // Replace with your actual bot token
